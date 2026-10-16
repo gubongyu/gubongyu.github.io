@@ -43,8 +43,10 @@ test('met-a-round stage images stay under the configured base path', async ({ pa
     );
   expect(imageSources.length).toBeGreaterThan(0);
   for (const source of imageSources) {
-    expect(source).toMatch(/^\/profile\/projects\/met-a-round\/pipeline\//);
-    const response = await page.request.get(source!);
+    const imageUrl = new URL(source!, page.url());
+    expect(imageUrl.origin).toBe(new URL(page.url()).origin);
+    expect(imageUrl.pathname).toMatch(/^\/profile\/projects\/met-a-round\/pipeline\//);
+    const response = await page.request.get(imageUrl.href);
     expect(response.ok(), source!).toBe(true);
   }
 });
