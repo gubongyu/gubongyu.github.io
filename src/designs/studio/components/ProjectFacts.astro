@@ -1,0 +1,72 @@
+---
+import type { ProjectVM } from '../../../application/contracts';
+import Icon from './Icon.astro';
+interface Props {
+  project: ProjectVM;
+}
+const { project } = Astro.props;
+---
+
+<div class="project-facts">
+  <div>
+    <span>ROLE</span>
+    <p>{project.role}</p>
+  </div>
+  <div>
+    <span>STATUS</span>
+    <p>{project.statusLabel}</p>
+  </div>
+  {project.stack.length > 0 && (
+    <div>
+      <span>STACK</span>
+      <p>{project.stack.join(' · ')}</p>
+    </div>
+  )}
+</div>
+{(project.repositoryUrl || project.demoUrl) && (
+  <div class="project-links">
+    {project.repositoryUrl && (
+      <a
+        class="button secondary"
+        href={project.repositoryUrl}
+        target="_blank"
+        rel="noopener noreferrer"
+      >
+        저장소{' '}
+        <Icon
+          name={/github\.com/i.test(project.repositoryUrl) ? 'github' : 'external-link'}
+          size={15}
+        />
+      </a>
+    )}
+    {project.demoUrl && (
+      <a class="button" href={project.demoUrl} target="_blank" rel="noopener noreferrer">
+        라이브 데모 <Icon name="external-link" size={15} />
+      </a>
+    )}
+  </div>
+)}
+<style>
+  .project-facts {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px 60px;
+    background: var(--soft);
+    padding: 22px;
+    margin-bottom: 35px;
+    border-radius: 6px;
+  }
+  .project-facts span {
+    font: 9px var(--mono);
+    color: var(--muted);
+  }
+  .project-facts p {
+    font-size: 13px;
+    margin-top: 7px;
+  }
+  .project-links {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 30px;
+  }
+</style>

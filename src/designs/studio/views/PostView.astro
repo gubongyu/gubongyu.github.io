@@ -1,0 +1,57 @@
+---
+import type { SiteVM, PostVM } from '../../../application/contracts';
+import { path } from '../../../config/site';
+import ArticleFrame from '../components/ArticleFrame.astro';
+import Icon from '../components/Icon.astro';
+import PostList from '../components/PostList.astro';
+interface Props {
+  site: SiteVM;
+  post: PostVM;
+  related: PostVM[];
+  headings: { depth: number; slug: string; text: string }[];
+}
+const { site, post, related, headings } = Astro.props;
+---
+
+<ArticleFrame
+  profile={site.profile}
+  title={post.title}
+  summary={post.summary}
+  headings={headings}
+  backHref={path('blog/')}
+  backLabel="모든 글"
+>
+  <Fragment slot="meta">
+    <span data-pagefind-filter="section">{post.sectionLabel}</span> /{' '}
+    <time datetime={post.publishedAt}>{post.dateLabel}</time> / {post.readingMinutes} MIN READ{' '}
+    {post.sample && <span class="sample-label">예제 글</span>}
+  </Fragment>
+  <div class="tag-list" slot="tags">
+    {post.tagLinks.map((t) => (
+      <a class="tag" href={t.href} data-pagefind-filter="tag">
+        {t.label}
+      </a>
+    ))}
+  </div>
+  <slot />
+  <Fragment slot="after">
+    {related.length > 0 && (
+      <section>
+        <h2 style="font-size:22px;margin-bottom:24px">함께 읽으면 좋은 글</h2>
+        <PostList posts={related} />
+      </section>
+    )}
+  </Fragment>
+  <Fragment slot="aside">
+    {post.relatedProjects
+      .map((id) => site.projects.find((p) => p.id === id))
+      .filter(Boolean)
+      .map((p) => (
+        <a class="tag" href={p!.href}>
+          관련 프로젝트 <Icon name="arrow-up-right" size={11} />
+          <br />
+          {p!.title}
+        </a>
+      ))}
+  </Fragment>
+</ArticleFrame>

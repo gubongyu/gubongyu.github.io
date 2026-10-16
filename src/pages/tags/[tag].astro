@@ -1,0 +1,17 @@
+---
+import { getSite } from '../../server/public-content';
+import { TagsView } from '../../presentation/active-design';
+import SiteDocument from '../../presentation/SiteDocument.astro';
+export async function getStaticPaths() {
+  return (await getSite()).tags.map((t) => ({ params: { tag: t.name } }));
+}
+const site = await getSite();
+const tag = Astro.params.tag!;
+---
+
+<SiteDocument
+  name={site.profile.name}
+  seo={{ title: `#${tag}`, description: `${tag}에 관한 글과 프로젝트.` }}
+>
+  <TagsView site={site} tag={tag} />
+</SiteDocument>

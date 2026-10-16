@@ -1,0 +1,13 @@
+---
+import { getSite } from '../../server/public-content';
+import { BlogView } from '../../presentation/active-design';
+import SiteDocument from '../../presentation/SiteDocument.astro';
+const site = await getSite();
+---
+
+<SiteDocument
+  name={site.profile.name}
+  seo={{ title: '글', description: '개발과 일상의 기록을 모았습니다.' }}
+>
+  <BlogView site={site} />
+</SiteDocument>

@@ -1,0 +1,128 @@
+---
+import { path } from '../../../config/site';
+---
+
+<div class="hero-art" data-hero>
+  <div class="grid-floor" aria-hidden="true"></div>
+  <span class="scene-coordinate mono" aria-hidden="true">
+    FIG. 001 — A WORK IN PROGRESS
+  </span>
+  <div class="scene-stage" data-hero-stage aria-hidden="true">
+    <img
+      src={path('designs/studio/desk.svg')}
+      alt=""
+      width="560"
+      height="480"
+      data-hero-poster
+      fetchpriority="high"
+    />
+    <canvas data-hero-canvas></canvas>
+  </div>
+  <span class="scene-note mono" aria-hidden="true">
+    <span>✳</span> a place for curious things
+  </span>
+  <button class="motion-button" data-motion-toggle aria-pressed="false">
+    움직임 끄기
+  </button>
+</div>
+<script>
+  import { mountHero } from './mount';
+  document.querySelectorAll<HTMLElement>('[data-hero]').forEach(mountHero);
+</script>
+<style>
+  .hero-art {
+    height: 470px;
+    position: relative;
+    width: 100%;
+    isolation: isolate;
+    overflow: clip;
+  }
+  .grid-floor {
+    position: absolute;
+    inset: 65px -20px 32px;
+    z-index: -1;
+    background-image:
+      linear-gradient(var(--line) 1px, transparent 1px),
+      linear-gradient(90deg, var(--line) 1px, transparent 1px);
+    background-size: 36px 36px;
+    transform: perspective(700px) rotateX(55deg) rotateZ(-25deg);
+    opacity: 0.42;
+    mask-image: radial-gradient(ellipse, #000 10%, transparent 66%);
+  }
+  .scene-stage {
+    position: absolute;
+    inset: 0 -20px;
+  }
+  .scene-stage img,
+  canvas {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+  }
+  canvas {
+    opacity: 0;
+    transition: opacity 0.5s;
+  }
+  [data-ready='true'] canvas {
+    opacity: 1;
+  }
+  [data-ready='true'] img {
+    opacity: 0;
+  }
+  .scene-coordinate {
+    position: absolute;
+    left: 9%;
+    top: 15px;
+    font-size: 8px;
+    color: var(--muted);
+    letter-spacing: 0.05em;
+  }
+  .scene-note {
+    position: absolute;
+    bottom: 28px;
+    right: 4%;
+    font-size: 9px;
+    color: var(--muted);
+    transform: rotate(-6deg);
+  }
+  .scene-note > span {
+    font-size: 22px;
+    color: var(--accent);
+    margin-right: 7px;
+  }
+  .motion-button {
+    position: absolute;
+    left: 9%;
+    bottom: 4px;
+    background: transparent;
+    color: var(--muted);
+    font-size: 10px;
+    min-height: 44px;
+    padding: 0;
+    text-decoration: underline;
+    text-underline-offset: 4px;
+  }
+  @media (max-width: 1000px) {
+    .hero-art {
+      height: 410px;
+    }
+  }
+  @media (max-width: 760px) {
+    .hero-art {
+      height: 330px;
+      max-width: 440px;
+      margin: 5px auto 0;
+    }
+    .scene-coordinate {
+      top: 0;
+    }
+    .scene-note {
+      bottom: 5px;
+    }
+    .motion-button {
+      display: none;
+    }
+  }
+</style>

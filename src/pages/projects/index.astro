@@ -1,0 +1,16 @@
+---
+import { getSite } from '../../server/public-content';
+import { ProjectsView } from '../../presentation/active-design';
+import SiteDocument from '../../presentation/SiteDocument.astro';
+const site = await getSite();
+---
+
+<SiteDocument
+  name={site.profile.name}
+  seo={{
+    title: '프로젝트',
+    description: '작은 아이디어를 구체적인 경험으로. 직접 만든 것들을 소개합니다.',
+  }}
+>
+  <ProjectsView site={site} />
+</SiteDocument>

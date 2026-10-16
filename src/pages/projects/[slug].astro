@@ -1,0 +1,64 @@
+---
+import { getSite } from '../../server/public-content';
+import { renderPublicBody } from '../../server/render-public-body';
+import { getPublicProjectStages } from '../../server/public-project-stages';
+import { ProjectView } from '../../presentation/active-design';
+import SiteDocument from '../../presentation/SiteDocument.astro';
+import ArticleBody from '../../presentation/ArticleBody.astro';
+import { withBase } from '../../core/urls';
+export async function getStaticPaths() {
+  return (await getSite()).projects.map((p) => ({ params: { slug: p.slug } }));
+}
+const site = await getSite();
+const project = site.projects.find((p) => p.slug === Astro.params.slug)!;
+const { Content, headings } = await renderPublicBody('projects', project.id);
+const stageEntries = await getPublicProjectStages(project.id);
+const stages = stageEntries.map((stage) => ({
+  ...stage,
+  image: withBase(stage.image.slice(1), import.meta.env.BASE_URL),
+  relatedPostHref: stage.relatedPostId
+    ? site.posts.find((post) => post.id === stage.relatedPostId)?.href
+    : undefined,
+}));
+const pageHeadings = [
+  ...headings,
+  ...stages.map((stage) => ({ depth: 2, slug: stage.id, text: stage.title })),
+];
+---
+
+<SiteDocument
+  name={site.profile.name}
+  seo={{ title: project.title, description: project.summary, sample: project.sample }}
+>
+  <ProjectView site={site} project={project} headings={pageHeadings} stages={stages}>
+    <ArticleBody>
+      <Content />
+      {stages.length > 0 && (
+        <div class="stage-details">
+          {stages.map(({ id, order, title, Content: StageContent }) => (
+            <section id={id} class="stage-detail" aria-labelledby={`${id}-title`}>
+              <h2 id={`${id}-title`}>
+                <span>{String(order).padStart(2, '0')}</span> {title}
+              </h2>
+              <StageContent />
+            </section>
+          ))}
+        </div>
+      )}
+    </ArticleBody>
+  </ProjectView>
+</SiteDocument>
+<style>
+  .stage-details {
+    margin-top: 5rem;
+  }
+  .stage-detail {
+    border-top: 1px solid var(--line);
+    padding-bottom: 2rem;
+  }
+  .stage-detail h2 span {
+    color: var(--accent);
+    font: 0.55em var(--mono);
+    margin-right: 0.8em;
+  }
+</style>

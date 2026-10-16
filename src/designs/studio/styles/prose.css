@@ -1,0 +1,78 @@
+[data-article-body] {
+  font-size: 16px;
+  line-height: 1.95;
+  color: var(--ink);
+}
+[data-article-body] > * + * {
+  margin-top: 1.5em;
+}
+[data-article-body] h2 {
+  margin-top: 2.8em;
+  font-size: 26px;
+}
+[data-article-body] h3 {
+  margin-top: 2em;
+  font-size: 21px;
+}
+[data-article-body] a {
+  color: var(--accent);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+[data-article-body] ul,
+[data-article-body] ol {
+  padding-left: 1.5em;
+}
+[data-article-body] li + li {
+  margin-top: 0.35em;
+}
+[data-article-body] blockquote {
+  border-left: 2px solid var(--accent);
+  margin-left: 0;
+  padding: 12px 20px;
+  color: var(--muted);
+  background: var(--soft);
+  font-size: 14px;
+}
+[data-article-body] pre {
+  padding: 24px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  overflow-x: auto;
+  font: 13px/1.85 var(--mono);
+  background: var(--soft) !important;
+}
+[data-article-body] :not(pre) > code {
+  padding: 3px 6px;
+  background: var(--soft);
+  font-size: 0.85em;
+  border-radius: 3px;
+}
+[data-article-body] code {
+  font-family: var(--mono);
+}
+[data-article-body] table {
+  display: block;
+  width: 100%;
+  overflow-x: auto;
+  border-collapse: collapse;
+  font-size: 14px;
+}
+[data-article-body] th,
+[data-article-body] td {
+  border-bottom: 1px solid var(--line);
+  padding: 12px 18px;
+  text-align: left;
+}
+[data-article-body] img {
+  height: auto;
+  border-radius: 8px;
+}
+.astro-code,
+.astro-code span {
+  color: var(--shiki-light);
+}
+[data-theme='dark'] .astro-code,
+[data-theme='dark'] .astro-code span {
+  color: var(--shiki-dark);
+}

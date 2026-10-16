@@ -1,0 +1,69 @@
+---
+import type { SiteVM } from '../../../application/contracts';
+import PageFrame from '../components/PageFrame.astro';
+import ProjectCard from '../components/ProjectCard.astro';
+interface Props {
+  site: SiteVM;
+}
+const { site } = Astro.props;
+const stacks = [...new Set(site.projects.flatMap((p) => p.stack))].sort();
+---
+
+<PageFrame profile={site.profile}>
+  <div class="page-heading">
+    <span class="eyebrow">SELECTED WORK / 프로젝트</span>
+    <h1>
+      고민을 담아 만든 것들<span class="accent">.</span>
+    </h1>
+    <p>작은 아이디어를 구체적인 경험으로. 만드는 과정과 그 안에서 배운 것을 소개합니다.</p>
+  </div>
+  <section data-filters>
+    <div class="filter-bar">
+      <span class="eyebrow" data-filter-status aria-live="polite">
+        {site.projects.length}개의 기록
+      </span>
+      <select
+        data-filter-tag
+        data-enhanced-filter
+        hidden
+        class="filter-select"
+        aria-label="기술로 필터"
+      >
+        <option value="">모든 기술</option>
+        {stacks.map((t) => (
+          <option value={t}>{t}</option>
+        ))}
+      </select>
+    </div>
+    <div class="project-grid" data-reveal-group>
+      {site.projects.map((project, index) => (
+        <ProjectCard project={project} index={index} />
+      ))}
+    </div>
+    <p class="empty-state" data-filter-empty hidden={site.projects.length > 0}>
+      조건에 맞는 프로젝트가 없습니다.{' '}
+      <button class="filter-chip" data-filter-reset>
+        필터 초기화
+      </button>
+    </p>
+  </section>
+</PageFrame>
+<script>
+  import { mountFilters } from '../../../features/filters';
+  document.querySelectorAll<HTMLElement>('[data-filters]').forEach(mountFilters);
+</script>
+<style>
+  .project-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 44px 28px;
+  }
+  .filter-select {
+    margin-left: auto;
+  }
+  @media (max-width: 760px) {
+    .project-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

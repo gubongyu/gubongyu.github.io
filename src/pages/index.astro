@@ -1,0 +1,13 @@
+---
+import { getSite } from '../server/public-content';
+import { HomeView } from '../presentation/active-design';
+import SiteDocument from '../presentation/SiteDocument.astro';
+const site = await getSite();
+---
+
+<SiteDocument
+  name={site.profile.name}
+  seo={{ title: '', description: site.profile.bio, sample: site.profile.sample }}
+>
+  <HomeView site={site} />
+</SiteDocument>

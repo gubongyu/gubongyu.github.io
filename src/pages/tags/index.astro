@@ -1,0 +1,13 @@
+---
+import { getSite } from '../../server/public-content';
+import { TagsView } from '../../presentation/active-design';
+import SiteDocument from '../../presentation/SiteDocument.astro';
+const site = await getSite();
+---
+
+<SiteDocument
+  name={site.profile.name}
+  seo={{ title: '태그', description: '관심사로 연결되는 글과 프로젝트.' }}
+>
+  <TagsView site={site} />
+</SiteDocument>

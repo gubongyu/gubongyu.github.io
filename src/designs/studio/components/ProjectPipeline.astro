@@ -1,0 +1,370 @@
+---
+import { path } from '../../../config/site';
+import Icon from './Icon.astro';
+import { STEP_COUNT, STEP_VH } from '../../../features/project-pipeline/timeline';
+
+type Stage = {
+  id: string;
+  title: string;
+  description: string;
+  image: string;
+  relatedPostHref?: string;
+};
+interface Props {
+  stages: Stage[];
+  assetBase?: string;
+}
+const { stages, assetBase = path('projects/met-a-round/pipeline/') } = Astro.props;
+if (stages.length !== STEP_COUNT) {
+  throw new Error(`met·a·round pipeline requires ${STEP_COUNT} stages; received ${stages.length}`);
+}
+const first = stages[0]!;
+---
+
+<section
+  id="pipeline"
+  class="project-pipeline"
+  data-project-pipeline
+  data-asset-base={assetBase}
+  data-pipeline-ready="false"
+  aria-label="met·a·round 복원 파이프라인"
+>
+  <div class="pipeline-intro">
+    <p class="pipeline-kicker">MET·A·ROUND / RECONSTRUCTION PIPELINE</p>
+    <h2>사진에서 3D 방까지</h2>
+    <p>사진에서 방 구조를 복원하는 열 단계를 스크롤로 따라가 보세요.</p>
+    <a href="#pipeline-end">
+      파이프라인 건너뛰기 <Icon name="arrow-down" size={14} />
+    </a>
+  </div>
+  <div
+    class="pipeline-track"
+    data-pipeline-track
+    style={`--pipeline-height:${STEP_COUNT * STEP_VH}vh`}
+  >
+    <div class="pipeline-stage" data-pipeline-stage data-pipeline-step="0">
+      <canvas data-pipeline-canvas aria-hidden="true"></canvas>
+      <div class="pipeline-heading">
+        <span data-pipeline-number>STEP 00 · {first.id.toUpperCase()}</span>
+        <h3 data-pipeline-title>{first.title}</h3>
+      </div>
+      <div class="pipeline-detail">
+        <img data-pipeline-preview src={first.image} alt={first.title} width="600" height="380" />
+        <p data-pipeline-description>{first.description}</p>
+        <a
+          data-pipeline-related
+          href={first.relatedPostHref ?? '#pipeline-end'}
+          hidden={!first.relatedPostHref}
+        >
+          관련 실험 글 읽기 <Icon name="arrow-up-right" size={13} />
+        </a>
+      </div>
+      <div class="pipeline-meter" aria-hidden="true">
+        <span>MET·A·ROUND</span>
+        <span class="pipeline-meter-fill" data-pipeline-progress>
+          MET·A·ROUND
+        </span>
+      </div>
+      <span class="pipeline-cue">
+        SCROLL TO EXPLORE <Icon name="arrow-down" size={13} />
+      </span>
+      <a class="pipeline-skip" href="#pipeline-end">
+        건너뛰기 <Icon name="arrow-down" size={13} />
+      </a>
+    </div>
+  </div>
+  <ol class="pipeline-static" data-pipeline-static>
+    {stages.map((stage, index) => (
+      <li id={`pipeline-${stage.id}`} data-pipeline-card data-pipeline-id={stage.id}>
+        <div class="pipeline-static-copy">
+          <span>
+            STEP {String(index).padStart(2, '0')} · {stage.id.toUpperCase()}
+          </span>
+          <h3 data-pipeline-card-title>{stage.title}</h3>
+          <p data-pipeline-card-description>{stage.description}</p>
+          {stage.relatedPostHref && (
+            <a data-pipeline-card-related href={stage.relatedPostHref}>
+              관련 실험 글 읽기 <Icon name="arrow-up-right" size={13} />
+            </a>
+          )}
+        </div>
+        <img
+          src={stage.image}
+          alt={`${stage.title} 단계 결과`}
+          loading="lazy"
+          width="900"
+          height="560"
+        />
+      </li>
+    ))}
+  </ol>
+  <div id="pipeline-end" class="pipeline-end" aria-hidden="true"></div>
+</section>
+<script>
+  import { mountProjectPipeline } from '../../../features/project-pipeline/mount';
+  document.querySelectorAll<HTMLElement>('[data-project-pipeline]').forEach(mountProjectPipeline);
+</script>
+<style>
+  .project-pipeline {
+    width: 100vw;
+    margin-left: calc(50% - 50vw);
+    background: var(--soft);
+    color: var(--ink);
+    border-block: 1px solid var(--line);
+    overflow: clip;
+    /* 본문 .shell과 같은 좌우 기준선 */
+    --pipeline-gutter: max(56px, calc((100vw - 1180px) / 2));
+  }
+  .pipeline-intro {
+    min-height: 45vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 72px var(--pipeline-gutter);
+    border-bottom: 1px solid var(--line);
+  }
+  .pipeline-kicker,
+  .pipeline-static-copy > span,
+  .pipeline-heading > span,
+  .pipeline-cue {
+    color: var(--muted);
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 0.12em;
+  }
+  .pipeline-static-copy > span,
+  .pipeline-heading > span {
+    color: var(--accent);
+  }
+  .pipeline-intro h2 {
+    font-size: clamp(30px, 4vw, 44px);
+    line-height: 1.35;
+    margin: 14px 0 18px;
+  }
+  .pipeline-intro p:not(.pipeline-kicker) {
+    color: var(--muted);
+    font-size: 15px;
+  }
+  .pipeline-intro > a,
+  .pipeline-static a {
+    align-self: flex-start;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    margin-top: 24px;
+    color: var(--ink);
+    font-size: 13px;
+    text-decoration: underline;
+    text-decoration-color: var(--line);
+    text-underline-offset: 5px;
+    transition:
+      color var(--dur-fast) var(--ease),
+      text-decoration-color var(--dur-fast) var(--ease);
+  }
+  .pipeline-intro > a:hover,
+  .pipeline-intro > a:focus-visible,
+  .pipeline-static a:hover,
+  .pipeline-static a:focus-visible,
+  .pipeline-detail a:hover,
+  .pipeline-detail a:focus-visible,
+  .pipeline-skip:hover,
+  .pipeline-skip:focus-visible {
+    color: var(--accent);
+    text-decoration-color: currentColor;
+  }
+  .pipeline-track {
+    display: none;
+  }
+  .pipeline-static {
+    list-style: none;
+    padding: 48px var(--pipeline-gutter) 72px;
+  }
+  .pipeline-static li {
+    display: grid;
+    grid-template-columns: minmax(0, 0.82fr) minmax(0, 1.18fr);
+    align-items: center;
+    gap: clamp(20px, 5vw, 72px);
+    padding: 44px 0;
+    border-bottom: 1px solid var(--line);
+    scroll-margin-top: 30px;
+  }
+  .pipeline-static-copy h3 {
+    margin: 12px 0;
+    font-size: clamp(22px, 2.4vw, 28px);
+    line-height: 1.4;
+  }
+  .pipeline-static-copy p {
+    color: var(--muted);
+    line-height: 1.75;
+    font-size: 15px;
+  }
+  .pipeline-static img {
+    display: block;
+    width: 100%;
+    height: auto;
+    max-height: 450px;
+    object-fit: contain;
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    background: #fff;
+  }
+  .pipeline-end {
+    height: 1px;
+  }
+  @media (min-width: 768px) and (prefers-reduced-motion: no-preference) {
+    :global(html:not([data-motion='off'])) [data-pipeline-ready='true'] .pipeline-track {
+      display: block;
+      height: var(--pipeline-height);
+    }
+    :global(html:not([data-motion='off'])) [data-pipeline-ready='true'] .pipeline-static {
+      display: none;
+    }
+  }
+  .pipeline-stage {
+    position: sticky;
+    top: 0;
+    height: 100svh;
+    isolation: isolate;
+    overflow: hidden;
+    background: radial-gradient(ellipse at 50% 42%, var(--surface), var(--soft) 72%);
+  }
+  .pipeline-stage canvas {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+  }
+  .pipeline-heading {
+    position: absolute;
+    top: clamp(38px, 8vh, 100px);
+    left: var(--pipeline-gutter);
+    z-index: 2;
+    max-width: 380px;
+    pointer-events: none;
+  }
+  .pipeline-heading h3 {
+    margin: 12px 0 0;
+    font-size: clamp(26px, 2.6vw, 36px);
+    line-height: 1.35;
+  }
+  .pipeline-detail {
+    position: absolute;
+    top: 50%;
+    right: var(--pipeline-gutter);
+    z-index: 2;
+    width: min(29vw, 360px);
+    overflow: hidden;
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    box-shadow: 0 18px 50px rgb(38 40 36 / 10%);
+    transform: translate(24px, -45%);
+    opacity: 0;
+    transition:
+      transform 0.45s ease,
+      opacity 0.45s ease;
+    pointer-events: none;
+  }
+  .pipeline-stage:hover .pipeline-detail,
+  .pipeline-stage:focus-within .pipeline-detail {
+    transform: translate(0, -50%);
+    opacity: 1;
+    pointer-events: auto;
+  }
+  .pipeline-detail img {
+    display: block;
+    width: 100%;
+    height: 180px;
+    object-fit: contain;
+    background: #fff;
+  }
+  .pipeline-detail p {
+    color: var(--muted);
+    font-size: 13px;
+    line-height: 1.75;
+    padding: 18px;
+  }
+  .pipeline-detail a {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    color: var(--ink);
+    font-size: 12px;
+    padding: 0 18px 18px;
+    transition: color var(--dur-fast) var(--ease);
+  }
+  .pipeline-detail a[hidden] {
+    display: none;
+  }
+  .pipeline-meter {
+    position: absolute;
+    bottom: 38px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-family: var(--mono);
+    font-size: clamp(13px, 1.3vw, 17px);
+    letter-spacing: 0.3em;
+    white-space: nowrap;
+    color: var(--line);
+  }
+  .pipeline-meter-fill {
+    position: absolute;
+    inset: 0 auto 0 0;
+    width: 0;
+    overflow: hidden;
+    color: var(--accent);
+  }
+  .pipeline-cue {
+    position: absolute;
+    bottom: 22px;
+    left: var(--pipeline-gutter);
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    transition:
+      opacity var(--dur) var(--ease),
+      visibility 0s;
+  }
+  /* Nothing left to scroll to on the last stage. */
+  [data-pipeline-last='true'] .pipeline-cue {
+    opacity: 0;
+    visibility: hidden;
+    transition:
+      opacity var(--dur) var(--ease),
+      visibility 0s var(--dur);
+  }
+  .pipeline-skip {
+    position: absolute;
+    bottom: 22px;
+    right: var(--pipeline-gutter);
+    z-index: 3;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 12px;
+    color: var(--muted);
+    text-decoration: underline;
+    text-decoration-color: var(--line);
+    text-underline-offset: 5px;
+    transition:
+      color var(--dur-fast) var(--ease),
+      text-decoration-color var(--dur-fast) var(--ease);
+  }
+  @media (max-width: 767px) {
+    .pipeline-intro {
+      min-height: auto;
+      padding: 56px 22px 48px;
+    }
+    .pipeline-static {
+      padding: 0 22px 56px;
+    }
+    .pipeline-static li {
+      grid-template-columns: 1fr;
+      gap: 22px;
+      padding: 34px 0;
+    }
+    .pipeline-static img {
+      order: -1;
+    }
+  }
+</style>

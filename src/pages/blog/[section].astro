@@ -1,0 +1,20 @@
+---
+import { getSite } from '../../server/public-content';
+import { BlogView } from '../../presentation/active-design';
+import SiteDocument from '../../presentation/SiteDocument.astro';
+export function getStaticPaths() {
+  return [{ params: { section: 'dev' } }, { params: { section: 'life' } }];
+}
+const section = Astro.params.section as 'dev' | 'life';
+const site = await getSite();
+---
+
+<SiteDocument
+  name={site.profile.name}
+  seo={{
+    title: section === 'dev' ? '개발 블로그' : '기타 블로그',
+    description: '배움과 일상의 기록.',
+  }}
+>
+  <BlogView site={site} section={section} />
+</SiteDocument>

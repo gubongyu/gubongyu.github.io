@@ -1,0 +1,147 @@
+---
+import type { Profile } from '../../../core/content';
+import { path } from '../../../config/site';
+import Icon from './Icon.astro';
+interface Props {
+  profile: Profile;
+}
+const { profile } = Astro.props;
+---
+
+<footer class="shell" data-pagefind-ignore>
+  <div class="footer-top">
+    <p>
+      계속 만들고,
+      <br />
+      계속 기록합니다<span class="accent">.</span>
+    </p>
+    <div class="footer-links">
+      {profile.socialLinks.map((link) => (
+        <a href={link.url} target="_blank" rel="noopener noreferrer">
+          {link.label}
+          <Icon name={/github/i.test(link.url) ? 'github' : 'external-link'} size={13} />
+        </a>
+      ))}
+      <a href={path('about/')}>
+        소개 <Icon name="arrow-up-right" size={13} />
+      </a>
+      <a href={path('rss.xml')}>
+        RSS <Icon name="rss" size={13} />
+      </a>
+      <a href={path('tags/')}>
+        태그 <Icon name="arrow-up-right" size={13} />
+      </a>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <span>
+      © {new Date().getFullYear()} {profile.name}
+      <span class="built"> · Built with Astro</span>
+    </span>
+    <span class="footer-right">
+      {profile.sample && <span class="sample-note">프로필·콘텐츠는 예제입니다</span>}
+      <button data-motion-toggle aria-pressed="false">
+        움직임 끄기
+      </button>
+      <span class="green-dot"></span>
+      <span>Always in progress</span>
+    </span>
+  </div>
+</footer>
+<style>
+  footer {
+    border-top: 1px solid var(--line);
+    margin-top: 64px !important;
+  }
+  .footer-top {
+    padding: 35px 0;
+    display: flex;
+    align-items: end;
+    justify-content: space-between;
+    gap: 25px;
+  }
+  .footer-top p {
+    font-size: 23px;
+    line-height: 1.55;
+    font-weight: 550;
+    letter-spacing: -0.055em;
+  }
+  .footer-links {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+    gap: 8px 24px;
+    font-size: 12px;
+  }
+  .footer-links a {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    white-space: nowrap;
+    transition: color var(--dur-fast) var(--ease);
+  }
+  .footer-links a:hover,
+  .footer-links a:focus-visible {
+    color: var(--accent);
+  }
+  .footer-bottom {
+    padding: 18px 0 24px;
+    border-top: 1px solid var(--line);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+    font: 10px/1.7 var(--mono);
+    color: var(--muted);
+  }
+  .footer-right {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+  .sample-note {
+    font: 10px var(--sans);
+    margin-right: 12px;
+  }
+  button {
+    background: transparent;
+    color: var(--muted);
+    font: 10px var(--sans);
+    min-height: 44px;
+    margin-right: 10px;
+    transition: color var(--dur-fast) var(--ease);
+  }
+  button:hover:enabled,
+  button:focus-visible {
+    color: var(--ink);
+  }
+  .green-dot {
+    width: 5px;
+    height: 5px;
+    background: #7c9269;
+    border-radius: 50%;
+  }
+  @media (max-width: 700px) {
+    .footer-top {
+      align-items: start;
+      flex-direction: column;
+    }
+    .footer-links {
+      justify-content: flex-start;
+    }
+    .footer-bottom {
+      align-items: start;
+      flex-direction: column;
+    }
+    .built {
+      display: none;
+    }
+    .footer-top p {
+      font-size: 21px;
+    }
+    .sample-note {
+      display: block;
+    }
+  }
+</style>

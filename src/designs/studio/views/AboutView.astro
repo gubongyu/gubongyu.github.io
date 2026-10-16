@@ -1,0 +1,236 @@
+---
+import type { SiteVM } from '../../../application/contracts';
+import PageFrame from '../components/PageFrame.astro';
+import Icon from '../components/Icon.astro';
+interface Props {
+  site: SiteVM;
+}
+const { site } = Astro.props;
+const p = site.profile;
+---
+
+<PageFrame profile={p}>
+  <div class="about-hero">
+    <div>
+      <p class="eyebrow">BEHIND THE SCREEN / 소개</p>
+      <h1>
+        안녕하세요,
+        <br />
+        {p.name}입니다<span class="accent">.</span>
+      </h1>
+      <p class="about-lead">{p.headline}</p>
+      <p class="muted">{p.bio}</p>
+      {p.sample && (
+        <p class="sample-label profile-sample">프로필 예시 · 실제 소개로 교체할 수 있습니다</p>
+      )}
+    </div>
+    <div class="profile-art" aria-hidden="true">
+      <span class="profile-orbit"></span>
+      <span class="profile-letter">
+        {p.name.slice(0, 1)}
+        <span>.</span>
+      </span>
+      <span class="profile-caption mono">CURIOUS BY DEFAULT</span>
+    </div>
+  </div>
+  <div class="about-columns">
+    <section>
+      <p class="eyebrow">01 / TOOLBOX</p>
+      <h2>생각을 구현하는 도구들</h2>
+      <div class="skill-groups">
+        {p.skillGroups.map((group) => (
+          <div class="skill-group">
+            <h3>{group.label}</h3>
+            <div class="skill-list">
+              {group.items.map((skill) => (
+                <span>{skill}</span>
+              ))}
+              {group.items.length === 0 && <p class="muted">사용 기술을 정리하고 있습니다.</p>}
+            </div>
+          </div>
+        ))}
+      </div>
+    </section>
+    <section>
+      <p class="eyebrow">02 / THE JOURNEY</p>
+      <h2>지금까지의 발자국</h2>
+      <div class="timeline">
+        {p.timeline.map((t) => (
+          <div>
+            <span class="mono">{t.year}</span>
+            <div>
+              <h3>{t.title}</h3>
+              {t.description && <p>{t.description}</p>}
+            </div>
+          </div>
+        ))}
+      </div>
+    </section>
+  </div>
+  <section class="contact divider">
+    <div>
+      <span class="eyebrow">LET’S CONNECT</span>
+      <h2>
+        이야기는 언제나 환영합니다<span class="accent">.</span>
+      </h2>
+    </div>
+    <div>
+      {p.socialLinks.map((link) => (
+        <a class="button secondary" href={link.url} target="_blank" rel="noopener noreferrer">
+          {link.label}
+          <Icon name={/github/i.test(link.url) ? 'github' : 'external-link'} size={15} />
+        </a>
+      ))}
+      {p.email ? (
+        <a class="button" href={`mailto:${p.email}`}>
+          {p.email} <Icon name="mail" size={15} />
+        </a>
+      ) : (
+        <p class="muted">연락처를 준비하고 있습니다.</p>
+      )}
+    </div>
+  </section>
+</PageFrame>
+<style>
+  .about-hero {
+    padding: 70px 0;
+    display: grid;
+    grid-template-columns: 1.2fr 1fr;
+    gap: 80px;
+    align-items: center;
+  }
+  h1 {
+    font-size: 52px;
+    margin: 24px 0;
+  }
+  .about-lead {
+    font-size: 19px;
+    margin-bottom: 18px;
+  }
+  .about-hero .muted {
+    max-width: 430px;
+    font-size: 14px;
+  }
+  .profile-sample {
+    display: inline-block;
+    margin-top: 20px;
+  }
+  .profile-art {
+    width: 270px;
+    height: 300px;
+    justify-self: center;
+    display: grid;
+    place-items: center;
+    background: var(--soft);
+    border: 1px solid var(--line);
+    border-radius: 100px 100px 8px 8px;
+    position: relative;
+    transform: rotate(5deg);
+  }
+  .profile-letter {
+    font: 750 135px var(--sans);
+    letter-spacing: -0.13em;
+    text-shadow: 5px 6px var(--line);
+    transform: rotate(-5deg);
+  }
+  .profile-letter span {
+    color: var(--accent);
+  }
+  .profile-orbit {
+    position: absolute;
+    width: 320px;
+    height: 100px;
+    border: 1px solid var(--accent);
+    border-radius: 50%;
+    transform: rotate(-30deg);
+  }
+  .profile-caption {
+    font-size: 8px;
+    position: absolute;
+    bottom: 22px;
+    color: var(--muted);
+    letter-spacing: 0.1em;
+  }
+  .about-columns {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 80px;
+    padding: 40px 0 60px;
+    border-top: 1px solid var(--line);
+  }
+  h2 {
+    font-size: 25px;
+    margin: 12px 0 25px;
+  }
+  .skill-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  .skill-list > span {
+    display: flex;
+    gap: 18px;
+    padding: 8px 14px;
+    border: 1px solid var(--line);
+    border-radius: 4px;
+    font: 12px/2 var(--mono);
+  }
+  .skill-groups {
+    display: grid;
+    gap: 22px;
+  }
+  .skill-group h3 {
+    font: 600 14px var(--mono);
+    margin-bottom: 10px;
+  }
+  .skill-list p {
+    font-size: 12px;
+  }
+  .timeline > div {
+    display: flex;
+    gap: 25px;
+    padding: 15px 0 25px;
+    border-bottom: 1px solid var(--line);
+  }
+  .timeline span {
+    font-size: 11px;
+    color: var(--accent);
+  }
+  .timeline h3 {
+    font-size: 17px;
+  }
+  .timeline p {
+    font-size: 12px;
+    color: var(--muted);
+    margin-top: 8px;
+  }
+  .contact {
+    padding-top: 40px;
+  }
+  .contact > div:last-child {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+  @media (max-width: 760px) {
+    .about-hero {
+      grid-template-columns: 1fr;
+      gap: 45px;
+      padding: 45px 0;
+    }
+    h1 {
+      font-size: 42px;
+    }
+    .profile-art {
+      width: 230px;
+      height: 240px;
+    }
+    .profile-orbit {
+      width: 275px;
+    }
+    .about-columns {
+      grid-template-columns: 1fr;
+      gap: 40px;
+    }
+  }
+</style>

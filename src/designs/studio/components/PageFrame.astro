@@ -1,0 +1,18 @@
+---
+import type { Profile } from '../../../core/content';
+import Header from './Header.astro';
+import Footer from './Footer.astro';
+import Reveal from './Reveal.astro';
+import '../styles/theme.css';
+interface Props {
+  profile: Profile;
+}
+const { profile } = Astro.props;
+---
+
+<Header name={profile.name} />
+<main id="main-content" class="shell">
+  <slot />
+</main>
+<Footer profile={profile} />
+<Reveal />

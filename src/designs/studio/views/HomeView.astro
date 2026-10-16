@@ -1,0 +1,473 @@
+---
+import type { SiteVM } from '../../../application/contracts';
+import { path } from '../../../config/site';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+import Icon from '../components/Icon.astro';
+import Reveal from '../components/Reveal.astro';
+import ProjectCard from '../components/ProjectCard.astro';
+import PostList from '../components/PostList.astro';
+import Hero from '../hero/Hero.astro';
+import '../styles/theme.css';
+interface Props {
+  site: SiteVM;
+}
+const { site } = Astro.props;
+const [headlineStart, ...headlineRest] = site.profile.headline.split(/,\s*/);
+---
+
+<Header name={site.profile.name} />
+<main id="main-content" class="shell">
+  <section class="intro">
+    <div class="intro-copy">
+      <p class="eyebrow">
+        <span class="small-cross">✳</span> DEVELOPER, MAKER & EVERYDAY LEARNER
+      </p>
+      <h1>
+        {headlineStart}
+        {headlineRest.length > 0 && (
+          <>
+            ,<br />
+            <span class="accent">{headlineRest.join(', ')}</span>
+          </>
+        )}
+      </h1>
+      <p class="intro-description">{site.profile.bio}</p>
+      <div class="intro-actions">
+        <a href={path('projects/')} class="button">
+          만든 것들 <Icon name="arrow-up-right" size={15} />
+        </a>
+        <a href={path('blog/')} class="text-link">
+          최근 글 읽기 <Icon name="arrow-up-right" size={14} />
+        </a>
+      </div>
+      <p class="current-status">
+        <span></span>
+        {site.profile.status}
+        <span class="status-line"></span>
+        <span class="mono">OPEN TO CURIOSITY</span>
+      </p>
+    </div>
+    <Hero />
+  </section>
+  <div class="intro-foot">
+    <span class="mono">A SMALL SPACE ON THE INTERNET</span>
+    <span>만들고 · 배우고 · 기록합니다</span>
+    <a href="#selected-work" aria-label="프로젝트 영역으로 내려가기">
+      SCROLL TO EXPLORE <Icon name="arrow-down" size={14} />
+    </a>
+  </div>
+  <nav class="topic-nav" aria-label="홈 주제 바로가기">
+    <a href="#selected-work">
+      <span>01 / BUILD</span>프로젝트 <Icon name="arrow-down-right" size={16} />
+    </a>
+    <a href="#dev-notes">
+      <span>02 / CODE</span>개발 블로그 <Icon name="arrow-down-right" size={16} />
+    </a>
+    <a href="#life-notes">
+      <span>03 / LIFE</span>일상 블로그 <Icon name="arrow-down-right" size={16} />
+    </a>
+    <a href="#about-me">
+      <span>04 / PROFILE</span>소개 <Icon name="arrow-down-right" size={16} />
+    </a>
+  </nav>
+  <section class="section topic-panel work-section" id="selected-work">
+    <div class="section-heading">
+      <div>
+        <p class="eyebrow">
+          <span class="section-index">01 /</span> 프로젝트 · SELECTED WORK
+        </p>
+        <h2>
+          고민을 담아 만든 것들<span class="accent">.</span>
+        </h2>
+      </div>
+      <a class="text-link" href={path('projects/')}>
+        모든 프로젝트 <Icon name="arrow-up-right" size={14} />
+      </a>
+    </div>
+    <div class="projects-grid" data-reveal-group>
+      {site.projects
+        .filter((p) => p.featured)
+        .slice(0, 2)
+        .map((project, index) => (
+          <ProjectCard project={project} index={index} />
+        ))}
+    </div>
+    {!site.projects.some((p) => p.featured) && (
+      <p class="empty-state">첫 번째 프로젝트를 준비하고 있습니다.</p>
+    )}
+  </section>
+  <div class="writing-heading">
+    <h2>주제별 기록</h2>
+    <a class="text-link" href={path('blog/')}>
+      모든 글 <Icon name="arrow-up-right" size={14} />
+    </a>
+  </div>
+  <div class="writing-topics">
+    {(
+      [
+        {
+          section: 'dev',
+          id: 'dev-notes',
+          index: '02',
+          label: 'CODE & LEARNING',
+          title: '개발 블로그',
+          description: '코드를 만들며 배운 기술과 해결 과정을 기록합니다.',
+        },
+        {
+          section: 'life',
+          id: 'life-notes',
+          index: '03',
+          label: 'LIFE & NOTES',
+          title: '일상 블로그',
+          description: '코드 밖에서 발견한 생각과 일상의 순간을 모읍니다.',
+        },
+      ] as const
+    ).map((topic) => (
+      <section
+        class:list={['topic-panel', 'writing-topic', topic.section]}
+        id={topic.id}
+        aria-labelledby={`${topic.id}-title`}
+      >
+        <p class="eyebrow">
+          <span class="section-index">{topic.index} /</span> {topic.label}
+        </p>
+        <h2 id={`${topic.id}-title`}>{topic.title}</h2>
+        <p class="topic-description">{topic.description}</p>
+        <PostList posts={site.posts.filter((post) => post.section === topic.section).slice(0, 3)} />
+        {!site.posts.some((post) => post.section === topic.section) && (
+          <p class="empty-state">첫 번째 기록을 준비하고 있습니다.</p>
+        )}
+        <a class="topic-more text-link" href={path(`blog/${topic.section}/`)}>
+          {topic.title} 전체 보기 <Icon name="arrow-up-right" size={14} />
+        </a>
+      </section>
+    ))}
+  </div>
+  <section class="about-strip topic-panel" id="about-me" data-reveal-item>
+    <div>
+      <p class="eyebrow">
+        <span class="section-index">04 /</span> 소개 · A LITTLE ABOUT ME
+      </p>
+      <h2>호기심을 오래 가져가는 사람.</h2>
+      <p>
+        새로운 것을 배우고, 직접 만들어 보며 이해합니다.
+        <br />그 과정에서 만난 질문과 이야기를 이곳에 남깁니다.
+      </p>
+    </div>
+    <a class="button secondary" href={path('about/')}>
+      조금 더 알아보기 <Icon name="arrow-up-right" size={15} />
+    </a>
+  </section>
+  {site.externalBlogs.length > 0 && (
+    <section class="section topic-panel external-section">
+      <div class="section-heading">
+        <h2>다른 공간의 기록</h2>
+      </div>
+      <div class="external-list" data-reveal-group>
+        {site.externalBlogs.map((blog) => (
+          <a href={blog.url} target="_blank" rel="noopener noreferrer">
+            <strong>
+              {blog.title} <Icon name="external-link" size={14} />
+            </strong>
+            <p class="muted">{blog.description}</p>
+          </a>
+        ))}
+      </div>
+    </section>
+  )}
+</main>
+<Footer profile={site.profile} />
+<Reveal />
+<style>
+  .intro {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    align-items: center;
+    padding: 54px 0 24px;
+    min-height: 550px;
+    gap: 20px;
+  }
+  .intro-copy {
+    position: relative;
+    z-index: 1;
+    padding-bottom: 15px;
+  }
+  .intro-copy .eyebrow {
+    font-size: 9px;
+    letter-spacing: 0.07em;
+  }
+  .small-cross {
+    color: var(--accent);
+    font-size: 18px;
+    vertical-align: -2px;
+    margin-right: 9px;
+  }
+  h1 {
+    font-size: clamp(40px, 4.8vw, 62px);
+    line-height: 1.32;
+    letter-spacing: -0.075em;
+    margin: 24px 0;
+    font-weight: 650;
+  }
+  h1 > span:first-child {
+    font-weight: 650;
+  }
+  .intro-description {
+    font-size: 14px;
+    line-height: 1.95;
+    max-width: 345px;
+    color: var(--muted);
+  }
+  .intro-actions {
+    display: flex;
+    align-items: center;
+    gap: 30px;
+    margin-top: 30px;
+  }
+  .current-status {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 8px;
+    font-size: 10px;
+    color: var(--muted);
+    margin-top: 35px;
+  }
+  .current-status > span:first-child {
+    width: 5px;
+    height: 5px;
+    border-radius: 50%;
+    background: #87a074;
+  }
+  .status-line {
+    height: 9px;
+    border-left: 1px solid var(--line);
+    margin: 0 3px;
+  }
+  .current-status .mono {
+    font-size: 8px;
+    letter-spacing: 0.025em;
+  }
+  .intro-foot {
+    padding: 20px 0;
+    border-top: 1px solid var(--line);
+    border-bottom: 1px solid var(--line);
+    display: flex;
+    justify-content: space-between;
+    gap: 16px;
+    color: var(--muted);
+    font-size: 10px;
+  }
+  .intro-foot .mono {
+    font-size: 9px;
+    letter-spacing: 0.05em;
+  }
+  .intro-foot a {
+    font: 8px var(--mono);
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    transition: color var(--dur-fast) var(--ease);
+  }
+  .intro-foot a:hover,
+  .intro-foot a:focus-visible {
+    color: var(--ink);
+  }
+  .projects-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 28px;
+  }
+  .about-strip {
+    padding: 46px 0 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 30px;
+  }
+  .about-strip h2 {
+    font-size: 26px;
+    margin: 14px 0;
+  }
+  .about-strip p:not(.eyebrow) {
+    font-size: 13px;
+    color: var(--muted);
+  }
+  .external-list {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 24px;
+  }
+  .external-list strong {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    transition: color var(--dur-fast) var(--ease);
+  }
+  .external-list a:hover strong,
+  .external-list a:focus-visible strong {
+    color: var(--accent);
+  }
+  .topic-nav {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 12px;
+    margin: 28px 0 48px;
+  }
+  .topic-nav a {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    padding: 20px;
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    font-weight: 650;
+    align-items: center;
+    transition:
+      border-color var(--dur-fast) var(--ease),
+      transform var(--dur) var(--ease);
+  }
+  .topic-nav :global(.icon) {
+    color: var(--muted);
+    transition: color var(--dur-fast) var(--ease);
+  }
+  .topic-nav a:hover :global(.icon),
+  .topic-nav a:focus-visible :global(.icon) {
+    color: var(--accent);
+  }
+  .topic-nav a > span:first-child {
+    grid-column: 1 / -1;
+    font: 10px/1.8 var(--mono);
+    color: var(--muted);
+    margin-bottom: 10px;
+  }
+  .topic-nav a:hover,
+  .topic-nav a:focus-visible {
+    border-color: var(--accent);
+  }
+  @media (prefers-reduced-motion: no-preference) {
+    :global(:root:not([data-motion='off'])) .topic-nav a:hover,
+    :global(:root:not([data-motion='off'])) .topic-nav a:focus-visible {
+      transform: translateY(-2px);
+    }
+  }
+  .topic-panel {
+    border: 1px solid var(--line);
+    border-top: 4px solid var(--topic-color, var(--accent));
+    border-radius: 12px;
+    background: var(--surface);
+    padding: 32px;
+    margin: 0 0 48px;
+    scroll-margin-top: 30px;
+  }
+  .work-section {
+    --topic-color: var(--accent);
+  }
+  .writing-heading {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+    margin-bottom: 24px;
+  }
+  .writing-heading h2 {
+    font-size: 24px;
+  }
+  .writing-topics {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 24px;
+  }
+  .writing-topic {
+    min-width: 0;
+    background: color-mix(in srgb, var(--topic-color) 6%, var(--surface));
+  }
+  .writing-topic.dev {
+    --topic-color: #5287b8;
+  }
+  .writing-topic.life {
+    --topic-color: #71915f;
+  }
+  .writing-topic h2 {
+    font-size: 28px;
+    margin-top: 16px;
+  }
+  .topic-description {
+    font-size: 13px;
+    color: var(--muted);
+    margin: 12px 0 26px;
+  }
+  .topic-more {
+    margin-top: 24px;
+  }
+  .about-strip {
+    --topic-color: #9881b7;
+    background: color-mix(in srgb, var(--topic-color) 7%, var(--surface));
+  }
+  @media (max-width: 760px) {
+    .topic-nav {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px;
+      margin-bottom: 32px;
+    }
+    .topic-nav a {
+      padding: 16px;
+    }
+    .topic-panel {
+      padding: 24px 18px;
+      margin-bottom: 32px;
+    }
+    .writing-topics {
+      grid-template-columns: 1fr;
+      gap: 0;
+    }
+  }
+  @media (max-width: 1000px) {
+    .intro {
+      gap: 0;
+    }
+    .intro-copy .eyebrow {
+      font-size: 8px;
+    }
+  }
+  @media (max-width: 760px) {
+    .intro {
+      grid-template-columns: 1fr;
+      padding-top: 38px;
+    }
+    h1 {
+      font-size: 48px;
+    }
+    .intro-description {
+      max-width: 430px;
+    }
+    .current-status {
+      margin-top: 24px;
+    }
+    .intro-foot > span:nth-child(2) {
+      display: none;
+    }
+
+    .projects-grid {
+      gap: 30px;
+      grid-template-columns: 1fr;
+    }
+    .about-strip {
+      align-items: start;
+      flex-direction: column;
+    }
+  }
+  @media (max-width: 390px) {
+    h1 {
+      font-size: 41px;
+    }
+    .intro-foot .mono {
+      font-size: 7px;
+    }
+    .intro-foot a {
+      font-size: 7px;
+      gap: 8px;
+    }
+  }
+</style>

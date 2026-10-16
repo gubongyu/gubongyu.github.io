@@ -1,0 +1,29 @@
+---
+import { getSite, getPublicPostPage } from '../../../server/public-content';
+import { renderPublicBody } from '../../../server/render-public-body';
+import { PostView } from '../../../presentation/active-design';
+import SiteDocument from '../../../presentation/SiteDocument.astro';
+import ArticleBody from '../../../presentation/ArticleBody.astro';
+export async function getStaticPaths() {
+  return (await getSite()).posts.map((p) => ({ params: { slug: p.slug } }));
+}
+const { site, post, related } = await getPublicPostPage(Astro.params.slug!);
+const { Content, headings } = await renderPublicBody('posts', post.id);
+---
+
+<SiteDocument
+  name={site.profile.name}
+  seo={{
+    title: post.title,
+    description: post.summary,
+    type: 'article',
+    publishedAt: post.publishedAt,
+    sample: post.sample,
+  }}
+>
+  <PostView site={site} post={post} related={related} headings={headings}>
+    <ArticleBody>
+      <Content />
+    </ArticleBody>
+  </PostView>
+</SiteDocument>

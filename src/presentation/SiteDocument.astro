@@ -1,0 +1,85 @@
+---
+import type { SEO } from '../application/contracts';
+import { path } from '../config/site';
+interface Props {
+  seo: SEO;
+  name: string;
+  terminal?: boolean;
+}
+const { seo, name: siteName, terminal = false } = Astro.props;
+const title = seo.title ? `${seo.title} — ${siteName}` : `${siteName} — 만들고, 배우고, 기록합니다`;
+const canonical = new URL(Astro.url.pathname, Astro.site);
+const structuredData =
+  seo.type === 'article'
+    ? {
+        '@context': 'https://schema.org',
+        '@type': 'BlogPosting',
+        headline: seo.title,
+        description: seo.description,
+        datePublished: seo.publishedAt,
+        url: canonical.href,
+        inLanguage: 'ko-KR',
+      }
+    : {
+        '@context': 'https://schema.org',
+        '@type': 'WebPage',
+        name: title,
+        description: seo.description,
+        url: canonical.href,
+        inLanguage: 'ko-KR',
+      };
+---
+
+<!doctype html>
+<html lang="ko" data-experience={terminal ? 'terminal' : 'web'}>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content={seo.description} />
+    <meta name="theme-color" content="#f7f7f2" />
+    <meta name="generator" content={Astro.generator} />
+    {(!__SITE_CONFIGURED__ || seo.sample) && <meta name="robots" content="noindex, follow" />}
+    <link rel="canonical" href={canonical} />
+    <link rel="icon" type="image/svg+xml" href={path('favicon.svg')} />
+    <link
+      rel="alternate"
+      type="application/rss+xml"
+      title={`${siteName}의 글`}
+      href={path('rss.xml')}
+    />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={seo.description} />
+    <meta property="og:type" content={seo.type ?? 'website'} />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:locale" content="ko_KR" />
+    {seo.publishedAt && <meta property="article:published_time" content={seo.publishedAt} />}
+    <title>{title}</title>
+    <script
+      type="application/ld+json"
+      set:html={JSON.stringify(structuredData).replaceAll('<', '\u003c')}
+    />
+    <script is:inline>
+      (() => {
+        let theme = matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+        let motion = 'on';
+        try {
+          theme = localStorage.getItem('studio-theme') || theme;
+          motion = localStorage.getItem('studio-motion') || motion;
+        } catch {}
+        document.documentElement.dataset.theme = theme === 'dark' ? 'dark' : 'light';
+        document.documentElement.dataset.motion =
+          motion === 'off' || matchMedia('(prefers-reduced-motion: reduce)').matches ? 'off' : 'on';
+      })();
+    </script>
+  </head>
+  <body>
+    <a class="skip-link" href="#main-content">
+      본문으로 건너뛰기
+    </a>
+    <slot />
+    <script>
+      import { mountPreferences } from '../features/preferences';
+      mountPreferences();
+    </script>
+  </body>
+</html>

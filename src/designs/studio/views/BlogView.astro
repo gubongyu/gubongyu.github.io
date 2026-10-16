@@ -1,0 +1,98 @@
+---
+import type { SiteVM } from '../../../application/contracts';
+import { path } from '../../../config/site';
+import PageFrame from '../components/PageFrame.astro';
+import PostList from '../components/PostList.astro';
+interface Props {
+  site: SiteVM;
+  section?: 'dev' | 'life';
+}
+const { site, section } = Astro.props;
+const posts = site.posts.filter((p) => !section || p.section === section);
+const tags = [...new Set(posts.flatMap((p) => p.tags))].sort();
+---
+
+<PageFrame profile={site.profile}>
+  <div class="page-heading">
+    <span class="eyebrow">THE JOURNAL / 기록의 아카이브</span>
+    <h1>
+      {section === 'dev'
+        ? '코드 곁의 기록'
+        : section === 'life'
+          ? '코드 밖의 이야기'
+          : '배움과 일상의 조각들'}
+      <span class="accent">.</span>
+    </h1>
+    <p>새롭게 배운 것, 직접 해 본 것, 그리고 잊고 싶지 않은 생각들.</p>
+  </div>
+  <section data-filters>
+    <div class="filter-bar">
+      <a class="filter-chip" href={path('blog/')} aria-current={!section ? 'page' : undefined}>
+        전체 {site.posts.length}
+      </a>
+      <a
+        class="filter-chip"
+        href={path('blog/dev/')}
+        aria-current={section === 'dev' ? 'page' : undefined}
+      >
+        개발 {site.posts.filter((p) => p.section === 'dev').length}
+      </a>
+      <a
+        class="filter-chip"
+        href={path('blog/life/')}
+        aria-current={section === 'life' ? 'page' : undefined}
+      >
+        기타 {site.posts.filter((p) => p.section === 'life').length}
+      </a>
+      <select
+        class="filter-select"
+        data-filter-tag
+        data-enhanced-filter
+        hidden
+        aria-label="태그로 필터"
+      >
+        <option value="">모든 태그</option>
+        {tags.map((t) => (
+          <option value={t}>{t}</option>
+        ))}
+      </select>
+      <input
+        class="filter-input"
+        data-filter-input
+        data-enhanced-filter
+        hidden
+        type="search"
+        placeholder="제목과 요약에서 찾기"
+        aria-label="글 목록 검색"
+      />
+    </div>
+    <PostList posts={posts} numbered />
+    <p class="empty-state" data-filter-empty hidden={posts.length > 0}>
+      조건에 맞는 글이 없습니다.{' '}
+      <button class="filter-chip" data-filter-reset>
+        필터 초기화
+      </button>
+    </p>
+    <p class="list-status mono muted" aria-live="polite" data-filter-status>
+      {posts.length}개의 기록
+    </p>
+  </section>
+</PageFrame>
+<script>
+  import { mountFilters } from '../../../features/filters';
+  document.querySelectorAll<HTMLElement>('[data-filters]').forEach(mountFilters);
+</script>
+<style>
+  .list-status {
+    font-size: 10px;
+    margin-top: 20px;
+  }
+  .filter-input {
+    margin-left: auto;
+  }
+  @media (max-width: 600px) {
+    .filter-input {
+      margin-left: 0;
+    }
+  }
+</style>

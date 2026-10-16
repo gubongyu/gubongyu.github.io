@@ -1,0 +1,10 @@
+export { default as HomeView } from '../designs/studio/views/HomeView.astro';
+export { default as BlogView } from '../designs/studio/views/BlogView.astro';
+export { default as PostView } from '../designs/studio/views/PostView.astro';
+export { default as ProjectsView } from '../designs/studio/views/ProjectsView.astro';
+export { default as ProjectView } from '../designs/studio/views/ProjectView.astro';
+export { default as AboutView } from '../designs/studio/views/AboutView.astro';
+export { default as TagsView } from '../designs/studio/views/TagsView.astro';
+export { default as SearchView } from '../designs/studio/views/SearchView.astro';
+export { default as TerminalView } from '../designs/studio/views/TerminalView.astro';
+export { default as NotFoundView } from '../designs/studio/views/NotFoundView.astro';

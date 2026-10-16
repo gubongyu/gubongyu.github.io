@@ -1,0 +1,45 @@
+---
+import type { SiteVM } from '../../../application/contracts';
+import { path } from '../../../config/site';
+import PageFrame from '../components/PageFrame.astro';
+import Icon from '../components/Icon.astro';
+interface Props {
+  site: SiteVM;
+}
+const { site } = Astro.props;
+---
+
+<PageFrame profile={site.profile}>
+  <section class="not-found">
+    <span class="eyebrow">404 / A LITTLE LOST</span>
+    <h1>
+      잠깐, 길을 벗어났네요<span class="accent">.</span>
+    </h1>
+    <p class="muted">페이지가 이동했거나 아직 작성되지 않았을 수 있습니다.</p>
+    <div>
+      <a class="button" href={path()}>
+        홈으로 돌아가기 <Icon name="arrow-up-right" size={15} />
+      </a>
+      <a class="button secondary" href={path('search/')}>
+        기록 찾기 <Icon name="search" size={15} />
+      </a>
+    </div>
+  </section>
+</PageFrame>
+<style>
+  .not-found {
+    padding: 100px 0;
+    text-align: center;
+  }
+  h1 {
+    font-size: clamp(28px, 4vw, 44px);
+    margin: 25px 0;
+  }
+  .not-found > div {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-top: 35px;
+  }
+</style>

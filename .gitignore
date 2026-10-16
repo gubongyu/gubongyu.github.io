@@ -1,0 +1,17 @@
+node_modules/
+dist/
+.astro/
+.env
+.env.*
+!.env.example
+test-results/
+playwright-report/
+.DS_Store
+
+# Local agent settings and portfolio research
+.agents/
+.codex/
+.aws/
+docs/비공개-프로젝트-요약.md
+docs/GitHub-프로젝트-목록.md
+Astro 포트폴리오 블로그 설계.zip

@@ -1,0 +1,72 @@
+name: Verify and deploy
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+    inputs:
+      deploy:
+        description: Publish the verified site to GitHub Pages
+        type: boolean
+        default: false
+
+permissions:
+  contents: read
+
+concurrency:
+  group: pages-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    env:
+      ASTRO_TELEMETRY_DISABLED: 1
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+      - run: npm ci
+      - run: npm run check
+      - run: npm test
+      - name: Build root site for browser tests
+        run: npm run build
+      - run: npx playwright install --with-deps chromium
+      - run: npm run test:e2e
+      - run: npm run test:base
+      - name: Require an origin for publishing
+        if: github.event_name == 'workflow_dispatch' && inputs.deploy
+        env:
+          SITE_URL: ${{ vars.SITE_URL }}
+        run: test -n "$SITE_URL"
+      - name: Build the deployment path
+        env:
+          SITE_URL: ${{ vars.SITE_URL }}
+          BASE_PATH: ${{ vars.BASE_PATH || '/' }}
+        run: npm run build
+      - name: Upload browser previews
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: browser-results
+          path: test-results/
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: dist
+  deploy:
+    if: github.event_name == 'workflow_dispatch' && inputs.deploy
+    needs: verify
+    runs-on: ubuntu-latest
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Deploy
+        id: deployment
+        uses: actions/deploy-pages@v4

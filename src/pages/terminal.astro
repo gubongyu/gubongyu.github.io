@@ -1,0 +1,14 @@
+---
+import { getSite } from '../server/public-content';
+import { TerminalView } from '../presentation/active-design';
+import SiteDocument from '../presentation/SiteDocument.astro';
+const site = await getSite();
+---
+
+<SiteDocument
+  name={site.profile.name}
+  terminal
+  seo={{ title: '터미널', description: '명령어로 탐색하는 글과 프로젝트.' }}
+>
+  <TerminalView site={site} />
+</SiteDocument>

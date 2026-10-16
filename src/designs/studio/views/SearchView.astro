@@ -1,0 +1,144 @@
+---
+import type { SiteVM } from '../../../application/contracts';
+import PageFrame from '../components/PageFrame.astro';
+import Icon from '../components/Icon.astro';
+interface Props {
+  site: SiteVM;
+}
+const { site } = Astro.props;
+---
+
+<PageFrame profile={site.profile}>
+  <div class="page-heading">
+    <span class="eyebrow">FIND SOMETHING / 검색</span>
+    <h1>
+      어떤 이야기를 찾고 있나요<span class="accent">?</span>
+    </h1>
+    <p>글과 프로젝트에서 궁금한 주제를 찾아보세요.</p>
+  </div>
+  <section data-search>
+    <form role="search">
+      <label class="sr-only" for="site-search">
+        글과 프로젝트 검색
+      </label>
+      <input
+        id="site-search"
+        data-search-input
+        type="search"
+        name="q"
+        autocomplete="off"
+        placeholder="Astro, 디자인, 기록…"
+      />
+      <button type="submit" class="button">
+        검색 <Icon name="search" size={15} />
+      </button>
+    </form>
+    <div class="suggestions">
+      <span class="eyebrow">TRY</span>
+      {site.tags.slice(0, 5).map((tag) => (
+        <button class="tag" data-search-suggestion={tag.name}>
+          #{tag.name}
+        </button>
+      ))}
+    </div>
+    <p class="search-status muted" data-search-status aria-live="polite">
+      어떤 기록을 찾고 있나요?
+    </p>
+    <div data-search-results></div>
+    <template data-search-arrow>
+      <Icon name="arrow-up-right" size={20} stroke={1.5} />
+    </template>
+    <noscript>
+      <p class="empty-state">
+        검색에는 JavaScript가 필요합니다. 글 목록과 태그 페이지에서 기록을 찾아보세요.
+      </p>
+    </noscript>
+    <script
+      type="application/json"
+      data-search-index
+      set:html={JSON.stringify(site.index).replaceAll('<', '\u003c')}
+    />
+  </section>
+</PageFrame>
+<script>
+  import { mountSearch } from '../../../features/search';
+  document.querySelectorAll<HTMLElement>('[data-search]').forEach(mountSearch);
+</script>
+<style>
+  form {
+    display: flex;
+    gap: 12px;
+    margin: 10px 0 15px;
+  }
+  input {
+    width: 100%;
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: 5px;
+    padding: 15px 20px;
+    color: var(--ink);
+    font-size: 17px;
+    min-width: 0;
+  }
+  form button {
+    flex-shrink: 0;
+  }
+  .suggestions {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+  .suggestions .tag {
+    background: transparent;
+    cursor: pointer;
+    min-height: 36px;
+  }
+  .suggestions .tag:hover,
+  .suggestions .tag:focus-visible {
+    color: var(--accent);
+  }
+  .suggestions .eyebrow {
+    margin-right: 5px;
+  }
+  .search-status {
+    font-size: 12px;
+    margin: 40px 0 20px;
+  }
+  [data-search-results] :global(article) {
+    border-top: 1px solid var(--line);
+    padding: 24px 0;
+  }
+  [data-search-results] :global(a) {
+    display: block;
+    position: relative;
+    padding-right: 35px;
+  }
+  [data-search-results] :global(h2),
+  .suggestions .tag {
+    transition: color var(--dur-fast) var(--ease);
+  }
+  [data-search-results] :global(h2) {
+    font-size: 22px;
+    margin-bottom: 10px;
+  }
+  [data-search-results] :global(p) {
+    color: var(--muted);
+    font-size: 13px;
+  }
+  [data-search-results] :global(span) {
+    position: absolute;
+    right: 0;
+    top: 0;
+    height: 30px;
+    display: flex;
+    align-items: center;
+    color: var(--accent);
+    font-size: 24px;
+    line-height: 30px;
+  }
+  [data-search-results] :global(a:hover h2),
+  [data-search-results] :global(a:focus-visible h2) {
+    color: var(--accent);
+  }
+</style>

@@ -1,0 +1,200 @@
+---
+import { navigation, path } from '../../../config/site';
+import Icon from './Icon.astro';
+interface Props {
+  name: string;
+}
+const { name } = Astro.props;
+const current = Astro.url.pathname;
+---
+
+<header class="header shell" data-pagefind-ignore>
+  <a href={path()} class="wordmark" aria-label={`${name} 홈`}>
+    {name}
+    <span>.</span>
+    <span class="wordmark-small">/ personal space</span>
+  </a>
+  <nav aria-label="주요 메뉴">
+    {navigation.map((item) => (
+      <a
+        href={item.href}
+        aria-current={
+          (item.href === path() ? current === item.href : current.startsWith(item.href))
+            ? 'page'
+            : undefined
+        }
+      >
+        {item.label}
+      </a>
+    ))}
+  </nav>
+  <div class="header-actions">
+    <a
+      class="icon-button search-shortcut"
+      href={path('search/')}
+      aria-label="글과 프로젝트 검색 (Ctrl 또는 Command K)"
+    >
+      <Icon name="search" size={16} />
+      <kbd>⌘ K</kbd>
+    </a>
+    <button
+      class="icon-button"
+      data-theme-toggle
+      aria-label="색상 테마 변경"
+      title="색상 테마 변경"
+    >
+      <Icon name="moon" size={17} />
+      <Icon name="sun" size={17} />
+    </button>
+    <a class="terminal-link" data-terminal-link href={path('terminal/')}>
+      <span aria-hidden="true">&gt;_</span>
+      <span>터미널</span>
+    </a>
+  </div>
+</header>
+<style>
+  .header {
+    height: 94px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 28px;
+    border-bottom: 1px solid var(--line);
+  }
+  .wordmark {
+    font: 750 24px/1 var(--sans);
+    letter-spacing: -0.07em;
+    white-space: nowrap;
+  }
+  .wordmark > span:first-child {
+    color: var(--accent);
+  }
+  .wordmark-small {
+    display: inline-block;
+    font: 10px var(--mono);
+    letter-spacing: -0.02em;
+    color: var(--muted);
+    margin-left: 16px;
+  }
+  nav {
+    display: flex;
+    align-items: center;
+    gap: 28px;
+    margin-left: auto;
+  }
+  nav a {
+    min-height: 44px;
+    display: inline-flex;
+    align-items: center;
+    font-size: 13px;
+    color: var(--muted);
+    position: relative;
+    transition: color var(--dur-fast) var(--ease);
+  }
+  nav a:hover,
+  nav a:focus-visible,
+  nav a[aria-current] {
+    color: var(--ink);
+  }
+  nav a[aria-current]::after {
+    content: '';
+    width: 4px;
+    height: 4px;
+    border-radius: 50%;
+    background: var(--accent);
+    position: absolute;
+    bottom: 4px;
+    left: calc(50% - 2px);
+  }
+  .header-actions {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+  }
+  .icon-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    height: 44px;
+    min-width: 40px;
+    background: transparent;
+    color: var(--muted);
+    transition: color var(--dur-fast) var(--ease);
+  }
+  .icon-button:hover,
+  .icon-button:focus-visible {
+    color: var(--ink);
+  }
+  /* The toggle shows where a click leads: moon in light, sun in dark. */
+  .icon-button :global(.icon-sun),
+  :global([data-theme='dark']) .icon-button :global(.icon-moon) {
+    display: none;
+  }
+  :global([data-theme='dark']) .icon-button :global(.icon-sun) {
+    display: block;
+  }
+  kbd {
+    font: 10px var(--mono);
+    border: 1px solid var(--line);
+    padding: 2px 4px;
+    border-radius: 3px;
+  }
+  .terminal-link {
+    font-size: 11px;
+    display: flex;
+    gap: 9px;
+    align-items: center;
+    padding: 7px 12px;
+    min-height: 38px;
+    border: 1px solid var(--line);
+    border-radius: 5px;
+    transition:
+      background-color var(--dur-fast) var(--ease),
+      color var(--dur-fast) var(--ease),
+      border-color var(--dur-fast) var(--ease);
+  }
+  .terminal-link > span:first-child {
+    font-family: var(--mono);
+    font-weight: 700;
+  }
+  .terminal-link:hover,
+  .terminal-link:focus-visible {
+    background: var(--ink);
+    color: var(--bg);
+    border-color: var(--ink);
+  }
+  @media (max-width: 1100px) {
+    .wordmark-small {
+      display: none;
+    }
+  }
+  @media (max-width: 700px) {
+    .header {
+      gap: 12px;
+      height: auto;
+      min-height: 86px;
+      flex-wrap: wrap;
+      padding-top: 15px;
+      padding-bottom: 8px;
+    }
+    nav {
+      order: 3;
+      width: 100%;
+      justify-content: center;
+      gap: 35px;
+    }
+    .header-actions {
+      margin-left: auto;
+    }
+    kbd {
+      display: none;
+    }
+    .terminal-link {
+      min-height: 44px;
+    }
+    .wordmark {
+      font-size: 22px;
+    }
+  }
+</style>

@@ -1,0 +1,74 @@
+---
+import type { SiteVM } from '../../../application/contracts';
+import PageFrame from '../components/PageFrame.astro';
+import PostList from '../components/PostList.astro';
+import ProjectCard from '../components/ProjectCard.astro';
+interface Props {
+  site: SiteVM;
+  tag?: string;
+}
+const { site, tag } = Astro.props;
+const posts = site.posts.filter((p) => p.tags.includes(tag || ''));
+const projects = site.projects.filter((p) => p.tags.includes(tag || ''));
+---
+
+<PageFrame profile={site.profile}>
+  <div class="page-heading">
+    <span class="eyebrow">CONNECTED IDEAS / 태그</span>
+    <h1>
+      {tag ? `#${tag}` : '관심사가 이어지는 곳'}
+      <span class="accent">.</span>
+    </h1>
+    <p>같은 주제를 다룬 글과 프로젝트를 한곳에서 살펴보세요.</p>
+  </div>
+  <div class="tags-cloud">
+    {site.tags.map((t) => (
+      <a class="filter-chip" href={t.href} aria-current={tag === t.name ? 'page' : undefined}>
+        #{t.name} <span class="mono muted">{t.count}</span>
+      </a>
+    ))}
+  </div>
+  {tag && (
+    <>
+      <section class="section">
+        <div class="section-heading">
+          <h2>
+            글 <span class="muted">{posts.length}</span>
+          </h2>
+        </div>
+        <PostList posts={posts} />
+        {!posts.length && <p class="empty-state">이 태그의 글이 없습니다.</p>}
+      </section>
+      <section class="section">
+        <div class="section-heading">
+          <h2>
+            프로젝트 <span class="muted">{projects.length}</span>
+          </h2>
+        </div>
+        <div class="project-grid" data-reveal-group>
+          {projects.map((project, index) => (
+            <ProjectCard project={project} index={index} />
+          ))}
+        </div>
+        {!projects.length && <p class="empty-state">이 태그의 프로젝트가 없습니다.</p>}
+      </section>
+    </>
+  )}
+</PageFrame>
+<style>
+  .tags-cloud {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+  .project-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 30px;
+  }
+  @media (max-width: 760px) {
+    .project-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

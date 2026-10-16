@@ -1,0 +1,13 @@
+---
+import { getSite } from '../server/public-content';
+import { AboutView } from '../presentation/active-design';
+import SiteDocument from '../presentation/SiteDocument.astro';
+const site = await getSite();
+---
+
+<SiteDocument
+  name={site.profile.name}
+  seo={{ title: '소개', description: site.profile.bio, sample: site.profile.sample }}
+>
+  <AboutView site={site} />
+</SiteDocument>

@@ -1,0 +1,46 @@
+{
+  "main": {
+    "name": "구본규",
+    "handle": "g9bon",
+    "headline": "생각을 코드로, 경험을 기록으로.",
+    "bio": "2020년 한양대학교에 입학하고, 2023년부터 2025년까지 육군 SW 개발병으로 복무했습니다. 이곳에 프로젝트와 개발 기록을 모읍니다.",
+    "status": "나만의 웹 공간을 만드는 중",
+    "sample": false,
+    "timeline": [
+      {
+        "year": "2020",
+        "title": "한양대학교 입학",
+        "description": ""
+      },
+      {
+        "year": "2023–2025",
+        "title": "육군 SW 개발병 복무",
+        "description": ""
+      }
+    ],
+    "socialLinks": [
+      {
+        "label": "GitHub",
+        "url": "https://github.com/gubongyu/"
+      }
+    ],
+    "skillGroups": [
+      {
+        "label": "Web",
+        "items": []
+      },
+      {
+        "label": "Backend",
+        "items": []
+      },
+      {
+        "label": "DB",
+        "items": []
+      },
+      {
+        "label": "Windows",
+        "items": []
+      }
+    ]
+  }
+}
